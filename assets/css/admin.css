@@ -14,6 +14,7 @@
   --success: #15803d;
   --radius: 8px;
   --sidebar-w: 270px;
+  --auth-portrait: url("https://pdfsfspkptysfowokzgi.supabase.co/storage/v1/object/public/portfolio-images/profile/1779887668-5779de3f-profile.jpeg");
 }
 
 html,
@@ -36,8 +37,8 @@ body {
   align-items: center;
   padding: 1rem;
   background:
-    linear-gradient(90deg, rgba(17,17,17,.88), rgba(17,17,17,.72)),
-    url("/assets/icon.svg") right 12% center / min(32rem, 70vw) no-repeat,
+    linear-gradient(90deg, rgba(17,17,17,.92) 0%, rgba(17,17,17,.78) 48%, rgba(17,17,17,.42) 100%),
+    var(--auth-portrait) right 10% center / min(30rem, 44vw) auto no-repeat,
     var(--black);
 }
 
@@ -360,6 +361,15 @@ body {
 @media (max-width: 991.98px) {
   .admin-sidebar {
     display: none;
+  }
+
+  .admin-auth-shell {
+    align-items: flex-start;
+    padding-top: 8.5rem;
+    background:
+      linear-gradient(180deg, rgba(17,17,17,.34) 0%, rgba(17,17,17,.88) 10rem, rgba(17,17,17,.94) 100%),
+      var(--auth-portrait) center 1.25rem / 8rem auto no-repeat,
+      var(--black);
   }
 
   .admin-page-title {
