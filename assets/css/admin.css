@@ -14,7 +14,6 @@
   --success: #15803d;
   --radius: 8px;
   --sidebar-w: 270px;
-  --auth-portrait: url("https://pdfsfspkptysfowokzgi.supabase.co/storage/v1/object/public/portfolio-images/profile/1779887668-5779de3f-profile.jpeg");
 }
 
 html,
@@ -35,19 +34,156 @@ body {
   min-height: 100vh;
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 1rem;
   background:
-    linear-gradient(90deg, rgba(17,17,17,.92) 0%, rgba(17,17,17,.78) 48%, rgba(17,17,17,.42) 100%),
-    var(--auth-portrait) right 10% center / min(30rem, 44vw) auto no-repeat,
+    radial-gradient(circle at top left, rgba(201,168,76,.16), transparent 24rem),
+    linear-gradient(135deg, #090909 0%, #111 52%, #1b1710 100%),
     var(--black);
 }
 
-.admin-auth-card {
-  width: min(100%, 420px);
-  background: rgba(255,255,255,.96);
+.admin-auth-layout {
+  width: min(100%, 1120px);
+  display: grid;
+  gap: .9rem;
+}
+
+.admin-auth-visual {
+  position: relative;
+  min-height: 18rem;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
   border: 1px solid var(--gold-border);
-  border-radius: var(--radius);
-  box-shadow: 0 26px 70px rgba(0,0,0,.28);
+  border-radius: 14px;
+  background: #0b0b0b;
+  box-shadow: 0 28px 72px rgba(0,0,0,.34);
+}
+
+.admin-auth-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(17,17,17,.04) 0%, rgba(17,17,17,.2) 42%, rgba(17,17,17,.92) 84%),
+    linear-gradient(90deg, rgba(17,17,17,.12), rgba(17,17,17,.02));
+  z-index: 1;
+}
+
+.admin-auth-portrait {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: .86;
+  color: transparent;
+  font-size: 0;
+}
+
+.admin-auth-visual-content {
+  width: 100%;
+  padding: 1.25rem;
+  color: #fff;
+  position: relative;
+  z-index: 2;
+}
+
+.admin-auth-badge {
+  width: fit-content;
+  background: rgba(201,168,76,.18);
+  color: #fff;
+  border: 1px solid var(--gold-border);
+  border-radius: 999px;
+  padding: .4rem .7rem;
+  font-weight: 800;
+}
+
+.admin-auth-visual-title {
+  font-size: clamp(2rem, 7vw, 4.6rem);
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: .96;
+  margin-bottom: .9rem;
+}
+
+.admin-auth-visual-copy {
+  max-width: 34rem;
+  color: rgba(255,255,255,.78);
+  font-size: 1rem;
+  line-height: 1.65;
+  margin-bottom: 1rem;
+}
+
+.admin-auth-proof-grid {
+  display: grid;
+  gap: .65rem;
+}
+
+.admin-auth-proof {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  width: fit-content;
+  color: rgba(255,255,255,.88);
+  background: rgba(17,17,17,.48);
+  border: 1px solid rgba(201,168,76,.22);
+  border-radius: 999px;
+  padding: .48rem .72rem;
+  font-size: .82rem;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+}
+
+.admin-auth-proof .bi {
+  color: var(--gold);
+}
+
+.admin-auth-card {
+  width: 100%;
+  background: rgba(255,255,255,.98);
+  border: 1px solid var(--gold-border);
+  border-radius: 14px;
+  box-shadow: 0 28px 72px rgba(0,0,0,.28);
+}
+
+.admin-auth-card-inner {
+  padding: 1.35rem;
+}
+
+.admin-auth-title {
+  color: var(--black);
+  font-size: clamp(2rem, 8vw, 3.15rem);
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.admin-auth-form .mb-3 {
+  margin-bottom: 0 !important;
+}
+
+.admin-auth-form label {
+  display: block;
+  margin-bottom: .55rem;
+  color: var(--black);
+  font-size: .85rem;
+  font-weight: 800;
+}
+
+.admin-auth-form .form-control {
+  width: 100%;
+  min-height: 3.25rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.admin-auth-submit {
+  min-height: 3.25rem;
+  border-radius: 999px;
+  font-size: 1rem;
 }
 
 .admin-shell {
@@ -343,6 +479,41 @@ body {
 }
 
 @media (min-width: 992px) {
+  .admin-auth-shell {
+    padding: 1.25rem;
+  }
+
+  .admin-auth-layout {
+    grid-template-columns: minmax(0, 1.08fr) minmax(380px, .78fr);
+    align-items: stretch;
+    min-height: min(40rem, calc(100vh - 2.5rem));
+    max-height: calc(100vh - 2.5rem);
+  }
+
+  .admin-auth-visual {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .admin-auth-visual-content {
+    padding: 1.75rem;
+  }
+
+  .admin-auth-proof-grid {
+    grid-template-columns: repeat(2, max-content);
+  }
+
+  .admin-auth-card {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
+  .admin-auth-card-inner {
+    width: 100%;
+    padding: 2.25rem;
+  }
+
   .admin-main {
     margin-left: var(--sidebar-w);
     padding: 1.35rem 1.5rem 2rem;
@@ -365,11 +536,24 @@ body {
 
   .admin-auth-shell {
     align-items: flex-start;
-    padding-top: 8.5rem;
-    background:
-      linear-gradient(180deg, rgba(17,17,17,.34) 0%, rgba(17,17,17,.88) 10rem, rgba(17,17,17,.94) 100%),
-      var(--auth-portrait) center 1.25rem / 8rem auto no-repeat,
-      var(--black);
+    padding: .85rem;
+  }
+
+  .admin-auth-layout {
+    gap: .8rem;
+  }
+
+  .admin-auth-card {
+    order: 2;
+  }
+
+  .admin-auth-visual {
+    order: 1;
+  }
+
+  .admin-auth-proof {
+    width: 100%;
+    justify-content: center;
   }
 
   .admin-page-title {

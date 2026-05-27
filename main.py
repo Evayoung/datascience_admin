@@ -60,6 +60,7 @@ from ui import page_shell  # noqa: E402
 
 
 theme = create_theme(primary="#C9A84C", dark="#111111", light="#F5F0E8")
+AUTH_PORTRAIT_URL = "https://pdfsfspkptysfowokzgi.supabase.co/storage/v1/object/public/portfolio-images/profile/1779887668-5779de3f-profile.jpeg"
 
 app = FastHTML(
     hdrs=(Link(rel="stylesheet", href="/assets/css/admin.css"),),
@@ -105,31 +106,65 @@ def _login_form(error: str | None = None):
     return (
         Title("Login - Portfolio Admin"),
         Div(
-            Card(
+            Div(
                 Div(
-                    Span("SB", cls="admin-brand-mark mb-3"),
-                    H1("Portfolio Admin", cls="fw-bold mb-2"),
-                    P("Sign in to manage the live portfolio content.", cls="admin-muted mb-4"),
-                    Alert(error, variant="danger") if error else "",
-                    Form(
-                        FormGroup(
-                            Input(type="password", name="password", placeholder="Admin password", required=True),
-                            label="Password",
-                        ),
-                        Button(Icon("box-arrow-in-right"), " Sign In", type="submit", cls="w-100 mt-2"),
-                        method="post",
-                        action="/login",
+                    Img(
+                        src=AUTH_PORTRAIT_URL,
+                        alt="",
+                        aria_hidden="true",
+                        onerror="this.style.display='none'",
+                        cls="admin-auth-portrait",
                     ),
-                    P(
-                        "Set ADMIN_PASSWORD in the admin environment before production use.",
-                        cls="small admin-muted mt-3 mb-0",
-                    )
-                    if ADMIN_PASSWORD == "change-me"
-                    else "",
-                    cls="p-4 p-md-5",
+                    Div(
+                        Badge("Portfolio Admin", cls="admin-auth-badge mb-3"),
+                        H1("Welcome back", cls="admin-auth-visual-title"),
+                        P(
+                            "Manage Segun Banji's portfolio content, projects, media, images, and messages from one focused workspace.",
+                            cls="admin-auth-visual-copy",
+                        ),
+                        Div(
+                            Div(Icon("shield-check"), Span("Private admin access"), cls="admin-auth-proof"),
+                            Div(Icon("database-check"), Span("Connected to Supabase"), cls="admin-auth-proof"),
+                            cls="admin-auth-proof-grid",
+                        ),
+                        cls="admin-auth-visual-content",
+                    ),
+                    cls="admin-auth-visual",
                 ),
-                cls="admin-auth-card",
-                body_cls="p-0",
+                Card(
+                    Div(
+                        Span("SB", cls="admin-brand-mark mb-4"),
+                        H1("Sign in", cls="admin-auth-title mb-2"),
+                        P("Enter the admin password to continue.", cls="admin-muted mb-4"),
+                        Alert(error, variant="danger", cls="mb-4") if error else "",
+                        Form(
+                            FormGroup(
+                                Input(
+                                    type="password",
+                                    name="password",
+                                    placeholder="Enter admin password",
+                                    required=True,
+                                    cls="form-control form-control-lg",
+                                ),
+                                label="Password",
+                            ),
+                            Button(Icon("box-arrow-in-right"), " Sign In", type="submit", cls="w-100 mt-3 admin-auth-submit"),
+                            method="post",
+                            action="/login",
+                            cls="admin-auth-form",
+                        ),
+                        P(
+                            "Set ADMIN_PASSWORD in the admin environment before production use.",
+                            cls="small admin-muted mt-3 mb-0",
+                        )
+                        if ADMIN_PASSWORD == "change-me"
+                        else "",
+                        cls="admin-auth-card-inner",
+                    ),
+                    cls="admin-auth-card",
+                    body_cls="p-0",
+                ),
+                cls="admin-auth-layout",
             ),
             cls="admin-auth-shell",
         ),
