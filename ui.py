@@ -4,6 +4,7 @@ from __future__ import annotations
 from fasthtml.common import A, Button, Div, H1, P, Span, Title
 from faststrap import Badge, Container, Icon
 
+from config import ADMIN_APP_NAME, PORTFOLIO_OWNER_NAME, PORTFOLIO_SITE_URL
 from schema import NAV_GROUPS, TABLES
 
 
@@ -38,8 +39,8 @@ def sidebar(active: str) -> Div:
         A(
             Span("SB", cls="admin-brand-mark"),
             Div(
-                Div("Portfolio Admin", cls="fw-bold"),
-                Div("Segun Banji", cls="small text-white-50"),
+                Div(ADMIN_APP_NAME, cls="fw-bold"),
+                Div(PORTFOLIO_OWNER_NAME, cls="small text-white-50"),
             ),
             href="/admin",
             cls="admin-brand",
@@ -47,7 +48,8 @@ def sidebar(active: str) -> Div:
         _link("dashboard", "/admin", "speedometer2", "Dashboard", active),
         *grouped,
         Div(
-            A(Icon("box-arrow-up-right"), Span("View Site"), href="https://banjisegun.vercel.app", target="_blank", cls="admin-nav-link"),
+            Button(Icon("download"), Span("Install App"), type="button", cls="admin-nav-link admin-install-button", data_install_app="true"),
+            A(Icon("box-arrow-up-right"), Span("View Site"), href=PORTFOLIO_SITE_URL, target="_blank", cls="admin-nav-link"),
             A(Icon("image"), Span("Images"), href="/admin/images", cls=f"admin-nav-link {'active' if active == 'images' else ''}"),
             A(Icon("box-arrow-right"), Span("Logout"), href="/logout", cls="admin-nav-link"),
             cls="mt-4 pt-3 border-top border-warning border-opacity-25",
@@ -71,8 +73,8 @@ def mobile_sidebar(active: str) -> Div:
             Div(
                 Span("SB", cls="admin-brand-mark"),
                 Div(
-                    Div("Portfolio Admin", id="adminMobileMenuLabel", cls="fw-bold"),
-                    Div("All content sections", cls="small text-white-50"),
+                    Div(ADMIN_APP_NAME, id="adminMobileMenuLabel", cls="fw-bold"),
+                    Div(PORTFOLIO_OWNER_NAME, cls="small text-white-50"),
                 ),
                 cls="d-flex align-items-center gap-2",
             ),
@@ -90,7 +92,8 @@ def mobile_sidebar(active: str) -> Div:
             A(Icon("image"), Span("Images"), href="/admin/images", cls=f"admin-nav-link {'active' if active == 'images' else ''}"),
             *grouped,
             Div(
-                A(Icon("box-arrow-up-right"), Span("View Site"), href="https://banjisegun.vercel.app", target="_blank", cls="admin-nav-link"),
+                Button(Icon("download"), Span("Install App"), type="button", cls="admin-nav-link admin-install-button", data_install_app="true"),
+                A(Icon("box-arrow-up-right"), Span("View Site"), href=PORTFOLIO_SITE_URL, target="_blank", cls="admin-nav-link"),
                 A(Icon("box-arrow-right"), Span("Logout"), href="/logout", cls="admin-nav-link"),
                 cls="mt-4 pt-3 border-top border-warning border-opacity-25",
             ),
@@ -125,7 +128,7 @@ def bottom_nav(active: str) -> Div:
 
 def page_shell(active: str, title: str, subtitle: str, *content):
     return (
-        Title(f"{title} - Portfolio Admin"),
+        Title(f"{title} - {ADMIN_APP_NAME}"),
         Div(
             sidebar(active),
             mobile_sidebar(active),
@@ -136,8 +139,9 @@ def page_shell(active: str, title: str, subtitle: str, *content):
                         P(subtitle, cls="admin-muted mb-0"),
                     ),
                     Div(
+                        Badge(PORTFOLIO_OWNER_NAME, cls="admin-pill"),
                         Badge("Supabase", cls="admin-pill"),
-                        A("View Site", href="https://banjisegun.vercel.app", target="_blank", cls="btn btn-outline-warning btn-sm ms-2 d-none d-md-inline-flex"),
+                        A("View Site", href=PORTFOLIO_SITE_URL, target="_blank", cls="btn btn-outline-warning btn-sm ms-2 d-none d-md-inline-flex"),
                     ),
                     cls="admin-topbar d-flex align-items-center justify-content-between gap-3",
                 ),

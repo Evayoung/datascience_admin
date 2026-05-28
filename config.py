@@ -15,6 +15,9 @@ def env(name: str, default: str = "") -> str:
 
 
 PROFILE_ID = env("PORTFOLIO_PROFILE_ID", "segun-banji")
+PORTFOLIO_OWNER_NAME = env("PORTFOLIO_OWNER_NAME", "Segun Banji")
+ADMIN_APP_NAME = env("ADMIN_APP_NAME", f"{PORTFOLIO_OWNER_NAME} Admin")
+PORTFOLIO_SITE_URL = env("PORTFOLIO_SITE_URL", "https://banjisegun.vercel.app")
 ADMIN_PASSWORD = env("ADMIN_PASSWORD") or env("PORTFOLIO_SECRET_KEY") or "change-me"
 ADMIN_SECRET_KEY = (
     env("ADMIN_SECRET_KEY")

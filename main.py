@@ -22,6 +22,7 @@ from fasthtml.common import (  # noqa: E402
     Link,
     Option,
     P,
+    Script,
     Section,
     Select,
     Span,
@@ -41,7 +42,7 @@ from faststrap.pwa import add_pwa  # noqa: E402
 from starlette.requests import Request  # noqa: E402
 from starlette.responses import RedirectResponse  # noqa: E402
 
-from config import ADMIN_PASSWORD, ADMIN_SECRET_KEY, PROFILE_ID  # noqa: E402
+from config import ADMIN_APP_NAME, ADMIN_PASSWORD, ADMIN_SECRET_KEY, PORTFOLIO_OWNER_NAME, PROFILE_ID  # noqa: E402
 from schema import Field, TABLES, TableConfig  # noqa: E402
 from supabase_admin import (  # noqa: E402
     SupabaseAdminError,
@@ -63,7 +64,10 @@ theme = create_theme(primary="#C9A84C", dark="#111111", light="#F5F0E8")
 AUTH_PORTRAIT_URL = "https://pdfsfspkptysfowokzgi.supabase.co/storage/v1/object/public/portfolio-images/profile/1779887668-5779de3f-profile.jpeg"
 
 app = FastHTML(
-    hdrs=(Link(rel="stylesheet", href="/assets/css/admin.css"),),
+    hdrs=(
+        Link(rel="stylesheet", href="/assets/css/admin.css"),
+        Script(src="/assets/js/install.js", defer=True),
+    ),
     secret_key=ADMIN_SECRET_KEY,
     session_cookie="datascience_admin_session",
 )
@@ -71,9 +75,9 @@ app = FastHTML(
 add_bootstrap(app, theme=theme, font_family="Inter", mode="light")
 add_pwa(
     app,
-    name="Segun Banji Portfolio Admin",
-    short_name="SB Admin",
-    description="PWA admin for managing the Segun Banji portfolio website.",
+    name=ADMIN_APP_NAME,
+    short_name=ADMIN_APP_NAME,
+    description=f"PWA admin for managing the {PORTFOLIO_OWNER_NAME} portfolio website.",
     theme_color="#111111",
     background_color="#F5F0E8",
     icon_path="/assets/icon.svg",
@@ -104,7 +108,7 @@ def _redirect(path: str) -> RedirectResponse:
 
 def _login_form(error: str | None = None):
     return (
-        Title("Login - Portfolio Admin"),
+        Title(f"Login - {ADMIN_APP_NAME}"),
         Div(
             Div(
                 Div(
@@ -116,10 +120,10 @@ def _login_form(error: str | None = None):
                         cls="admin-auth-portrait",
                     ),
                     Div(
-                        Badge("Portfolio Admin", cls="admin-auth-badge mb-3"),
+                        Badge(ADMIN_APP_NAME, cls="admin-auth-badge mb-3"),
                         H1("Welcome back", cls="admin-auth-visual-title"),
                         P(
-                            "Manage Segun Banji's portfolio content, projects, media, images, and messages from one focused workspace.",
+                            f"Manage {PORTFOLIO_OWNER_NAME}'s portfolio content, projects, media, images, and messages from one focused workspace.",
                             cls="admin-auth-visual-copy",
                         ),
                         Div(

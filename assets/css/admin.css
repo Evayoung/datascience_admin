@@ -263,6 +263,25 @@ body {
   font-weight: 600;
 }
 
+.admin-nav-link[type="button"],
+.admin-install-button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.admin-install-button {
+  color: #fff;
+  border: 1px solid var(--gold-border);
+  background: rgba(201,168,76,.12);
+}
+
+.admin-install-button:disabled {
+  cursor: default;
+  opacity: .72;
+}
+
 .admin-nav-link:hover,
 .admin-nav-link.active {
   color: #fff;
