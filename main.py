@@ -42,6 +42,12 @@ from faststrap.pwa import add_pwa  # noqa: E402
 from starlette.requests import Request  # noqa: E402
 from starlette.responses import RedirectResponse  # noqa: E402
 
+from admin_security import (  # noqa: E402
+    change_admin_password,
+    password_matches,
+    password_override_enabled,
+    reset_admin_password,
+)
 from config import ADMIN_APP_NAME, ADMIN_PASSWORD, ADMIN_SECRET_KEY, PORTFOLIO_OWNER_NAME, PROFILE_ID  # noqa: E402
 from schema import Field, TABLES, TableConfig  # noqa: E402
 from supabase_admin import (  # noqa: E402
@@ -392,7 +398,7 @@ def login_page(request: Request):
 @app.post("/login")
 async def login_submit(request: Request):
     form = await request.form()
-    if str(form.get("password", "")) != ADMIN_PASSWORD:
+    if not password_matches(str(form.get("password", ""))):
         return _login_form("That password did not match.")
     request.session["admin_authenticated"] = True
     return _redirect("/admin")
@@ -480,6 +486,153 @@ def dashboard(request: Request, status: str | None = None):
             body_cls="p-0",
         ),
     )
+
+
+def _security_panel(error: str | None = None, status: str | None = None):
+    override_active = password_override_enabled()
+    status_message = ""
+    if status == "changed":
+        status_message = Alert("Admin password changed successfully.", variant="success", cls="mb-4")
+    elif status == "reset":
+        status_message = Alert("Admin password reset to the environment default.", variant="success", cls="mb-4")
+
+    return Row(
+        Col(
+            Card(
+                Div(
+                    Span("Access", cls="admin-kicker"),
+                    H2("Change admin password", cls="h4 fw-bold mt-2"),
+                    P(
+                        "This stores a hashed password override in Supabase. The environment password remains the reset/default password.",
+                        cls="admin-muted",
+                    ),
+                    status_message,
+                    Alert(error, variant="danger", cls="mb-4") if error else "",
+                    Form(
+                        FormGroup(
+                            Input(type="password", name="current_password", cls="form-control", required=True),
+                            label="Current Password",
+                            required=True,
+                        ),
+                        FormGroup(
+                            Input(type="password", name="new_password", cls="form-control", required=True),
+                            label="New Password",
+                            required=True,
+                            help_text="Use at least 8 characters.",
+                        ),
+                        FormGroup(
+                            Input(type="password", name="confirm_password", cls="form-control", required=True),
+                            label="Confirm New Password",
+                            required=True,
+                        ),
+                        Button(Icon("shield-lock"), " Update Password", type="submit", cls="mt-2"),
+                        method="post",
+                        action="/admin/security/password",
+                    ),
+                    cls="p-3 p-md-4",
+                ),
+                cls="admin-card h-100",
+                body_cls="p-0",
+            ),
+            span=12,
+            lg=7,
+        ),
+        Col(
+            Card(
+                Div(
+                    Span("Default", cls="admin-kicker"),
+                    H2("Reset to default", cls="h4 fw-bold mt-2"),
+                    P(
+                        "Reset removes the Supabase override and uses the current ADMIN_PASSWORD value from the deployment environment again.",
+                        cls="admin-muted",
+                    ),
+                    Badge(
+                        "Custom password active" if override_active else "Using environment default",
+                        cls="admin-pill mb-4",
+                    ),
+                    Form(
+                        FormGroup(
+                            Input(type="password", name="current_password", cls="form-control", required=True),
+                            label="Current Password",
+                            required=True,
+                        ),
+                        Button(Icon("arrow-counterclockwise"), " Reset Password", type="submit", cls="btn btn-outline-warning mt-2"),
+                        method="post",
+                        action="/admin/security/reset",
+                    ),
+                    cls="p-3 p-md-4",
+                ),
+                cls="admin-card h-100",
+                body_cls="p-0",
+            ),
+            span=12,
+            lg=5,
+        ),
+        cls="g-4",
+    )
+
+
+@app.get("/admin/security")
+def security_page(request: Request, status: str | None = None):
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    return page_shell(
+        "security",
+        "Security",
+        "Change or reset the admin login password.",
+        _security_panel(status=status),
+    )
+
+
+@app.post("/admin/security/password")
+async def security_change_password(request: Request):
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    form = await request.form()
+    current_password = str(form.get("current_password", ""))
+    new_password = str(form.get("new_password", ""))
+    confirm_password = str(form.get("confirm_password", ""))
+
+    if not password_matches(current_password):
+        return page_shell("security", "Security", "Change or reset the admin login password.", _security_panel("Current password is incorrect."))
+    if len(new_password) < 8:
+        return page_shell("security", "Security", "Change or reset the admin login password.", _security_panel("New password must be at least 8 characters."))
+    if new_password != confirm_password:
+        return page_shell("security", "Security", "Change or reset the admin login password.", _security_panel("New password and confirmation do not match."))
+
+    try:
+        change_admin_password(new_password)
+    except SupabaseAdminError as exc:
+        return page_shell(
+            "security",
+            "Security",
+            "Change or reset the admin login password.",
+            _security_panel(f"Password could not be saved. Run supabase_admin_settings.sql in Supabase, then try again. Details: {exc}"),
+        )
+    return _redirect("/admin/security?status=changed")
+
+
+@app.post("/admin/security/reset")
+async def security_reset_password(request: Request):
+    redirect = _require_admin(request)
+    if redirect:
+        return redirect
+    form = await request.form()
+    current_password = str(form.get("current_password", ""))
+    if not password_matches(current_password):
+        return page_shell("security", "Security", "Change or reset the admin login password.", _security_panel("Current password is incorrect."))
+    try:
+        reset_admin_password()
+    except SupabaseAdminError as exc:
+        return page_shell(
+            "security",
+            "Security",
+            "Change or reset the admin login password.",
+            _security_panel(f"Password could not be reset. Run supabase_admin_settings.sql in Supabase, then try again. Details: {exc}"),
+        )
+    return _redirect("/admin/security?status=reset")
 
 
 @app.get("/admin/resource/{key}")

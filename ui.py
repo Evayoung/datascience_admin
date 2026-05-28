@@ -49,6 +49,7 @@ def sidebar(active: str) -> Div:
         *grouped,
         Div(
             Button(Icon("download"), Span("Install App"), type="button", cls="admin-nav-link admin-install-button", data_install_app="true"),
+            _link("security", "/admin/security", "shield-lock", "Security", active),
             A(Icon("box-arrow-up-right"), Span("View Site"), href=PORTFOLIO_SITE_URL, target="_blank", cls="admin-nav-link"),
             A(Icon("image"), Span("Images"), href="/admin/images", cls=f"admin-nav-link {'active' if active == 'images' else ''}"),
             A(Icon("box-arrow-right"), Span("Logout"), href="/logout", cls="admin-nav-link"),
@@ -93,6 +94,7 @@ def mobile_sidebar(active: str) -> Div:
             *grouped,
             Div(
                 Button(Icon("download"), Span("Install App"), type="button", cls="admin-nav-link admin-install-button", data_install_app="true"),
+                _link("security", "/admin/security", "shield-lock", "Security", active),
                 A(Icon("box-arrow-up-right"), Span("View Site"), href=PORTFOLIO_SITE_URL, target="_blank", cls="admin-nav-link"),
                 A(Icon("box-arrow-right"), Span("Logout"), href="/logout", cls="admin-nav-link"),
                 cls="mt-4 pt-3 border-top border-warning border-opacity-25",
