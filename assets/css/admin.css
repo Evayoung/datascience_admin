@@ -579,3 +579,196 @@ body {
     font-size: 1.55rem;
   }
 }
+
+/* ===== Dark Mode ===== */
+[data-bs-theme="dark"] {
+  --surface: #1a1a2e;
+  --line: #2a2a3e;
+  --ink: #e2e8f0;
+  --muted: #94a3b8;
+  --off-white: #0f172a;
+}
+
+[data-bs-theme="dark"] body {
+  background:
+    radial-gradient(circle at top left, rgba(201, 168, 76, 0.08), transparent 28rem),
+    linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .admin-auth-card {
+  background: rgba(30, 41, 59, 0.98);
+  border-color: rgba(201, 168, 76, 0.25);
+}
+
+[data-bs-theme="dark"] .admin-auth-card-inner {
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .admin-auth-title {
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .admin-auth-form label {
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .admin-auth-form .form-control {
+  background: #0f172a;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .admin-auth-form .form-control::placeholder {
+  color: var(--muted);
+}
+
+[data-bs-theme="dark"] .admin-card {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+[data-bs-theme="dark"] .admin-topbar {
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom-color: var(--line);
+}
+
+[data-bs-theme="dark"] .admin-table-wrap {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+[data-bs-theme="dark"] .admin-table th {
+  background: #1e293b;
+  border-bottom-color: var(--line);
+  color: var(--muted);
+}
+
+[data-bs-theme="dark"] .admin-table td {
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .admin-upload-url {
+  background: #1e293b;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+  background: #0f172a;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+  background: #1e293b;
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .form-control.bg-light {
+  background: #1e293b !important;
+  color: var(--ink);
+}
+
+[data-bs-theme="dark"] .admin-empty {
+  color: var(--muted);
+}
+
+/* ===== Theme Toggle in Sidebar ===== */
+.fs-theme-toggle {
+  padding: 0;
+  margin: 0;
+}
+
+.fs-theme-toggle .form-check-input {
+  cursor: pointer;
+  width: 2em;
+  height: 1em;
+}
+
+.fs-theme-toggle .form-check-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.fs-theme-toggle:hover .form-check-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.fs-theme-toggle-icon {
+  font-size: 0.9rem;
+}
+
+/* ===== Toast Notifications ===== */
+#toast-container .toast {
+  min-width: 280px;
+  max-width: 400px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+}
+
+#toast-container .toast-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-bs-theme="dark"] #toast-container .toast-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Loading Button States ===== */
+.btn.is-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+.btn.is-loading::after {
+  content: "";
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Breadcrumb Navigation ===== */
+.admin-topbar .breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.admin-topbar .breadcrumb-item a {
+  color: var(--gold);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.admin-topbar .breadcrumb-item a:hover {
+  color: var(--gold-dark);
+  text-decoration: underline;
+}
+
+.admin-topbar .breadcrumb-item.active {
+  color: var(--muted);
+}
+
+.admin-topbar .breadcrumb-item + .breadcrumb-item::before {
+  color: var(--muted);
+  opacity: 0.6;
+}

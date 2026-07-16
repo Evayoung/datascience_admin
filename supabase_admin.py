@@ -101,6 +101,42 @@ def list_rows(table: str, order: str = "sort_order.asc", limit: int = 250) -> li
     return _request("GET", table, {"select": "*", "order": order, "limit": str(limit)})
 
 
+def list_rows_page(table: str, page: int = 1, per_page: int = 25, order: str = "sort_order.asc") -> tuple[list[dict], int]:
+    """Fetch a page of rows and return (rows, total_count)."""
+    total = count_rows(table)
+    offset = (max(page, 1) - 1) * per_page
+    rows = _request("GET", table, {"select": "*", "order": order, "limit": str(per_page), "offset": str(offset)})
+    return rows, total
+
+
+def count_rows(table: str) -> int:
+    """Return the total row count for a table using Supabase's count header."""
+    if not configured():
+        return 0
+    url = _endpoint(table, {"select": "id"})
+    req = Request(
+        url,
+        method="GET",
+        headers={
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+            "Accept": "application/json",
+            "Prefer": "count=exact",
+            "Range-Unit": "items",
+            "Range": "0-0",
+        },
+    )
+    try:
+        with urlopen(req, timeout=SUPABASE_TIMEOUT_SECONDS) as response:
+            content_range = response.headers.get("Content-Range", "")
+            if "/" in content_range:
+                total = content_range.split("/")[-1]
+                return int(total) if total != "*" else 0
+            return 0
+    except Exception:
+        return 0
+
+
 def get_row(table: str, pk: str, value: str) -> dict | None:
     rows = _request("GET", table, {"select": "*", pk: f"eq.{value}", "limit": "1"})
     return rows[0] if rows else None
@@ -124,8 +160,11 @@ def option_rows(table: str, label_fields: tuple[str, ...], value_field: str, ord
     rows = list_rows(table, order=order)
     options = []
     for row in rows:
+        raw_value = row.get(value_field)
+        if raw_value is None:
+            continue  # Skip rows missing the value field
         label = " - ".join(str(row.get(field) or "") for field in label_fields).strip(" -")
-        options.append((str(row[value_field]), label or str(row[value_field])))
+        options.append((str(raw_value), label or str(raw_value)))
     return options
 
 
@@ -133,7 +172,13 @@ def encoded_pk(value: object) -> str:
     return quote(str(value), safe="")
 
 
+_storage_bucket_ensured: set[str] = set()
+
+
 def ensure_storage_bucket(bucket: str = SUPABASE_STORAGE_BUCKET) -> None:
+    """Ensure the storage bucket exists. Caches the result to avoid repeated API calls."""
+    if bucket in _storage_bucket_ensured:
+        return
     payload = {
         "id": bucket,
         "name": bucket,
@@ -141,16 +186,42 @@ def ensure_storage_bucket(bucket: str = SUPABASE_STORAGE_BUCKET) -> None:
         "file_size_limit": 5242880,
         "allowed_mime_types": ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"],
     }
-    _storage_request(
+    result = _storage_request(
         "POST",
         "bucket",
         data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
     )
+    _storage_bucket_ensured.add(bucket)
 
 
 def public_storage_url(path: str, bucket: str = SUPABASE_STORAGE_BUCKET) -> str:
     return f"{SUPABASE_URL}/storage/v1/object/public/{bucket}/{quote(path, safe='/')}"
+
+
+def delete_storage_file(public_url: str) -> bool:
+    """Delete a file from Supabase Storage given its public URL. Returns True if deleted."""
+    if not configured() or not public_url:
+        return False
+    try:
+        # Extract the object path from the public URL
+        # Format: {SUPABASE_URL}/storage/v1/object/public/{bucket}/{path}
+        prefix = f"{SUPABASE_URL}/storage/v1/object/public/"
+        if not public_url.startswith(prefix):
+            return False
+        relative = public_url[len(prefix):]
+        # Split into bucket and path
+        parts = relative.split("/", 1)
+        if len(parts) != 2:
+            return False
+        bucket, object_path = parts
+        _storage_request(
+            "DELETE",
+            f"object/{bucket}/{quote(object_path, safe='/')}",
+        )
+        return True
+    except Exception:
+        return False
 
 
 def upload_image(filename: str, content: bytes, content_type: str | None = None, folder: str = "uploads") -> str:
